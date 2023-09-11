@@ -162,6 +162,8 @@ pytest-timeout==2.1.0
     # via ha-multi-ap-tracker (pyproject.toml)
 pytz==2023.3.post1
     # via babel
+pyyaml==6.0.1
+    # via ha-multi-ap-tracker (pyproject.toml)
 requests==2.31.0
     # via
     #   fritzconnection
@@ -213,6 +215,8 @@ traitlets==5.9.0
     #   ipython
     #   matplotlib-inline
 types-mock==5.1.0.2
+    # via ha-multi-ap-tracker (pyproject.toml)
+types-pyyaml==6.0.12.11
     # via ha-multi-ap-tracker (pyproject.toml)
 typing-extensions==4.7.1
     # via
