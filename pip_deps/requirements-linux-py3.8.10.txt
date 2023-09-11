@@ -1,0 +1,14 @@
+certifi==2023.7.22
+    # via requests
+charset-normalizer==3.2.0
+    # via requests
+fritzconnection==1.13.1
+    # via ha-multi-ap-tracker (pyproject.toml)
+idna==3.4
+    # via requests
+paho-mqtt==1.6.1
+    # via ha-multi-ap-tracker (pyproject.toml)
+requests==2.31.0
+    # via fritzconnection
+urllib3==2.0.4
+    # via requests

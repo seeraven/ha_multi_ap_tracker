@@ -1,0 +1,117 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+]
+build-backend = 'setuptools.build_meta'
+
+
+[project]
+name = "ha-multi-ap-tracker"
+version = "0.0.1"
+authors = [{name = "Clemens Rabe", email = "clemens.rabe@clemensrabe.de"}]
+description = "Custom device tracker for home-assistant to track WiFi devices over non-mesh configurations."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "fritzconnection",
+    "paho-mqtt"
+]
+
+[project.optional-dependencies]
+dev = [
+    "ipython",
+
+    "black",
+
+    "flake8",
+    "flake8-black",
+    "flake8-bugbear",
+    "flake8-comprehensions",
+    "flake8-isort",
+    "flake8-pyproject",
+    "pep8-naming",
+
+    "isort",
+
+    "mypy",
+    "types-mock",
+
+    "pycodestyle",
+
+    "pylint",
+
+    "sphinx",
+    "sphinx_rtd_theme",
+    "sphinx-pyproject",
+
+    "pyinstaller",
+]
+test = [
+    "coverage[toml]",
+    "mock",
+    "pytest",
+    "pytest-cov",
+    "pytest-timeout"
+]
+
+
+[tool.black]
+line-length = 120
+
+
+[tool.isort]
+profile = "black"
+line_length = 120
+src_paths = ["src", "test"]
+
+
+[tool.flake8]
+max-line-length = 120
+
+
+[tool.pylint.main]
+py-version = "3.8"
+
+[tool.pylint.format]
+max-line-length = 120
+
+
+[tool.mypy]
+show_error_codes = true
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+pythonpath = ["src"]
+
+
+[tool.coverage.paths]
+source = ["src"]
+
+[tool.coverage.run]
+source = [
+    "app_mod",
+    "test",
+]
+data_file = ".coverage"
+branch = true
+parallel = true
+relative_files = true
+disable_warnings = ["no-data-collected"]
+
+[tool.coverage.report]
+show_missing = true
+precision = 2
+fail_under = 20
+
+[tool.coverage.html]
+directory = "doc/unittests-coverage"
+
+[tool.coverage.xml]
+output = "doc/unittests-coverage/coverage.xml"
+
+
+[tool.sphinx-pyproject]
+copyright = "2023, Clemens Rabe <clemens.rabe@clemensrabe.de>"
+release_url = "https://github.com/seeraven/ha_multi_ap_tracker/releases"
