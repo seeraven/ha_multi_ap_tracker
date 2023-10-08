@@ -16,7 +16,8 @@ requires-python = ">=3.8"
 dependencies = [
     "fritzconnection",
     "paho-mqtt",
-    "pyyaml"
+    "pyyaml",
+    "tabulate"
 ]
 
 [project.optional-dependencies]
@@ -81,6 +82,13 @@ max-line-length = 120
 
 [tool.mypy]
 show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "fritzconnection.*",
+    "tabulate.*"
+]
+ignore_missing_imports = true
 
 
 [tool.pytest.ini_options]

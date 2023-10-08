@@ -1,5 +1,5 @@
 """
-config subcommand of ha_multi_ap_tracker.
+status subcommand of ha_multi_ap_tracker.
 
 Copyright:
     2023 by Clemens Rabe <clemens.rabe@clemensrabe.de>
@@ -17,74 +17,64 @@ Copyright:
 # -----------------------------------------------------------------------------
 import argparse
 import logging
-from pathlib import Path
+
+from tabulate import tabulate
 
 from .config import Config
+from .fritz_ifc import DeviceMonitor
 
 # -----------------------------------------------------------------------------
 # Module Variables
 # -----------------------------------------------------------------------------
 LOGGER = logging.getLogger()
 DESCRIPTION = """
-'config' command
+'status' command
 ================
 
-Manage the configuration of the ha_multi_ap_tracker.
-"""
-
-DESCRIPTION_GENERATE = """
-'config generate' command
-=========================
-
-Generate an example configuration file.
+Show the current status of the devices by connecting to the Fritz!Box and all
+repeaters.
 """
 
 DESCRIPTION_SHOW = """
-'config show' command
+'status show' command
 =====================
 
-Print the configuration on stdout. The configuration file to load is
-specified using the '--config-file' option.
+Show the current status of all found devices.
 """
 
 
 # -----------------------------------------------------------------------------
 # Commands
 # -----------------------------------------------------------------------------
-def save_example_config(args) -> None:
-    """Save an example configuration."""
-    LOGGER.info("Saving example configuration to %s.", args.output_file)
-    config = Config()
-    config.save(args.output_file)
-
-
-def show_config(args) -> None:
-    """Show the configuration."""
+def show_status(args) -> None:
+    """Show the current status of all found devices."""
     config = Config()
     config.load(args.config_file)
-    print(config)
+    monitor = DeviceMonitor(config)
+    device_states = monitor.get_current_status()
+    table_headers = ["Name", "MAC", "IP", "Interface", "Connected To", "Status"]
+    table_data = [
+        [state.name, state.mac, state.ip, state.interface_type, state.connected_to, state.status]
+        for state in device_states.values()
+    ]
+    table_data.sort(key=lambda row: row[0])
+    print(tabulate(table_data, headers=table_headers, tablefmt="rounded_outline"))
 
 
 # -----------------------------------------------------------------------------
 # Parsers
 # -----------------------------------------------------------------------------
-def add_config_parser(subparsers) -> None:
-    """Add the parser for the 'config' subcommand."""
-    config_parser = subparsers.add_parser(
-        "config", description=DESCRIPTION, formatter_class=argparse.RawTextHelpFormatter
+def add_status_parser(subparsers) -> None:
+    """Add the parser for the 'status' subcommand."""
+    status_parser = subparsers.add_parser(
+        "status", description=DESCRIPTION, formatter_class=argparse.RawTextHelpFormatter
     )
-    config_subparsers = config_parser.add_subparsers(required=True)
+    status_subparsers = status_parser.add_subparsers(required=True)
 
-    generate_config_parser = config_subparsers.add_parser(
-        "generate", description=DESCRIPTION_GENERATE, formatter_class=argparse.RawTextHelpFormatter
-    )
-    generate_config_parser.add_argument("output_file", help="Config file to create.", type=Path)
-    generate_config_parser.set_defaults(func=save_example_config)
-
-    show_config_parser = config_subparsers.add_parser(
+    show_status_parser = status_subparsers.add_parser(
         "show", description=DESCRIPTION_SHOW, formatter_class=argparse.RawTextHelpFormatter
     )
-    show_config_parser.set_defaults(func=show_config)
+    show_status_parser.set_defaults(func=show_status)
 
 
 # -----------------------------------------------------------------------------

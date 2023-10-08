@@ -15,33 +15,106 @@ Copyright:
 # -----------------------------------------------------------------------------
 # Module Import
 # -----------------------------------------------------------------------------
+import logging
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from typing import Optional
 
 import yaml
 
 # -----------------------------------------------------------------------------
-# Constants
+# Module Variables
 # -----------------------------------------------------------------------------
-DEFAULT_CONFIG = {
-    "mqtt": {"username": "mqtt", "password": "secret", "host": "mqtt.local.net", "port": 1883},
-    "fritzbox": {"address": "fritz.box", "username": "admin", "password": "secret"},
-    "repeater": [{"address": "fritz.repeater", "username": "admin", "password": "secret"}],
-}
+LOGGER = logging.getLogger()
 
 
 # -----------------------------------------------------------------------------
-# Functions
+# Configuration Objects
 # -----------------------------------------------------------------------------
-def load_config(config_file: Path):
-    """Load the configuration."""
-    with open(config_file, "r", encoding="utf-8") as file_handle:
-        return yaml.safe_load(file_handle)
+@dataclass
+class Fritzbox:
+    """Configuration of the connection to the Fritz!Box."""
+
+    address: str = "fritz.box"
+    username: str = "admin"
+    password: str = "secret"
+
+    def __str__(self) -> str:
+        """Return the string representation of this object."""
+        retval = "  FritzBox Connection:\n"
+        retval += f"    Address:  {self.address}\n"
+        retval += f"    Username: {self.username}\n"
+        retval += f"    Password: {self.password}\n"
+        return retval
 
 
-def save_config(config_file: Path, config) -> None:
-    """Save a configuration."""
-    with open(config_file, "w", encoding="utf-8") as file_handle:
-        yaml.dump(config, file_handle)
+@dataclass
+class Mqtt:
+    """Configuration of the connection to the MQTT broker."""
+
+    address: str = "mqtt.local.net"
+    port: int = 1883
+    username: str = "mqtt"
+    password: str = "secret"
+
+    def __str__(self) -> str:
+        """Return the string representation of this object."""
+        retval = "  MQTT:\n"
+        retval += f"    Address:  {self.address}\n"
+        retval += f"    Port:     {self.port}\n"
+        retval += f"    Username: {self.username}\n"
+        retval += f"    Password: {self.password}\n"
+        return retval
+
+
+@dataclass
+class Repeater:
+    """Configuration of the connection to a Fritz!Repeater."""
+
+    address: str = "fritz.repeater"
+    username: str = "admin"
+    password: str = "secret"
+
+    def __str__(self) -> str:
+        """Return the string representation of this object."""
+        retval = "  Repeater Connection:\n"
+        retval += f"    Address:  {self.address}\n"
+        retval += f"    Username: {self.username}\n"
+        retval += f"    Password: {self.password}\n"
+        return retval
+
+
+@dataclass
+class Config:
+    """Configuration of this application."""
+
+    mqtt: Mqtt = Mqtt()
+    fritzbox: Fritzbox = Fritzbox()
+    repeater: list[Repeater] = field(default_factory=lambda: [Repeater()])
+
+    def load(self, config_file: Optional[Path]) -> None:
+        """Load the configuration from a yaml file."""
+        if config_file:
+            LOGGER.debug("Loading configuration file %s.", config_file)
+            with open(config_file, "r", encoding="utf-8") as file_handle:
+                data = yaml.safe_load(file_handle)
+            self.mqtt = Mqtt(**data["mqtt"])
+            self.fritzbox = Fritzbox(**data["fritzbox"])
+            self.repeater = [Repeater(**args) for args in data["repeater"]]
+
+    def save(self, config_file: Path) -> None:
+        """Save the configuration to a yaml file."""
+        with open(config_file, "w", encoding="utf-8") as file_handle:
+            yaml.dump(asdict(self), file_handle)
+
+    def __str__(self) -> str:
+        """Return the string representation of this object."""
+        retval = "Configuration:\n"
+        retval += str(self.mqtt) + "\n"
+        retval += str(self.fritzbox) + "\n"
+        for repeater in self.repeater:
+            retval += str(repeater) + "\n"
+        return retval
 
 
 # -----------------------------------------------------------------------------

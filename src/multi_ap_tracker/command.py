@@ -17,16 +17,18 @@ Copyright:
 # -----------------------------------------------------------------------------
 import argparse
 import logging
+from pathlib import Path
 
 from .cmd_config import add_config_parser
+from .cmd_status import add_status_parser
 
 # -----------------------------------------------------------------------------
 # Module Variables
 # -----------------------------------------------------------------------------
 LOGGER = logging.getLogger()
 DESCRIPTION = """
-Device Tracker for Non-Mesh Setups of FritzBox and FritzRepeater
-================================================================
+Device Tracker for Non-Mesh Setups of Fritz!Box and Fritz!Repeater
+==================================================================
 
 
 """
@@ -43,8 +45,10 @@ def get_parser():
     parser.add_argument(
         "-v", "--verbose", action="store_true", default=False, help="Be verbose by setting the logging level to DEBUG."
     )
+    parser.add_argument("-c", "--config-file", type=Path, default=None, help="The configuration file to load.")
 
     add_config_parser(subparsers)
+    add_status_parser(subparsers)
 
     return parser
 
