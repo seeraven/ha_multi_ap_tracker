@@ -166,3 +166,4 @@ cython_debug/
 .dockerstamps/
 releases/
 config.yml
+state.yml

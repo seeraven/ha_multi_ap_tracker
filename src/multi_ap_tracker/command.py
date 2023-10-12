@@ -20,12 +20,14 @@ import logging
 from pathlib import Path
 
 from .cmd_config import add_config_parser
+from .cmd_mqtt import add_mqtt_parser
 from .cmd_status import add_status_parser
+from .cmd_track import add_track_parser
 
 # -----------------------------------------------------------------------------
 # Module Variables
 # -----------------------------------------------------------------------------
-LOGGER = logging.getLogger()
+LOGGER = logging.getLogger(__name__)
 DESCRIPTION = """
 Device Tracker for Non-Mesh Setups of Fritz!Box and Fritz!Repeater
 ==================================================================
@@ -46,9 +48,18 @@ def get_parser():
         "-v", "--verbose", action="store_true", default=False, help="Be verbose by setting the logging level to DEBUG."
     )
     parser.add_argument("-c", "--config-file", type=Path, default=None, help="The configuration file to load.")
+    parser.add_argument(
+        "-s",
+        "--state-file",
+        type=Path,
+        default=Path.cwd() / "state.yml",
+        help="The persistent state file. Default: %(default)s",
+    )
 
     add_config_parser(subparsers)
     add_status_parser(subparsers)
+    add_mqtt_parser(subparsers)
+    add_track_parser(subparsers)
 
     return parser
 
@@ -62,7 +73,9 @@ def ha_multi_ap_tracker() -> None:
     log_level = logging.INFO
     if args.verbose:
         log_level = logging.DEBUG
-    logging.basicConfig(format=log_format, level=log_level)
+    logging.basicConfig(format=log_format, level=logging.WARNING)
+    logging.getLogger("fritzconnection").setLevel(logging.WARNING)
+    logging.getLogger("multi_ap_tracker").setLevel(log_level)
 
     args.func(args)
 

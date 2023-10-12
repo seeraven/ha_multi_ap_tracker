@@ -24,7 +24,7 @@ from .config import Config
 # -----------------------------------------------------------------------------
 # Module Variables
 # -----------------------------------------------------------------------------
-LOGGER = logging.getLogger()
+LOGGER = logging.getLogger(__name__)
 DESCRIPTION = """
 'config' command
 ================
