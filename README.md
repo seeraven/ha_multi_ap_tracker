@@ -9,6 +9,26 @@ communicated to [home-assistant] via [MQTT].
 
 ## Installation
 
+On the [ha_multi_ap_tracker releases] page you will find the latest pre-build
+release as a binary. After downloading the binary for your platform you should
+set the executable bit and place the file somewhere in your `PATH`, e.g., into
+`/usr/local/bin`.
+
+Another option to use this tool is to build a docker image:
+
+    make build-docker-release
+
+The docker image is named `ha-multi-ap-tracker:0.0.1` and the entrypoint is
+set directly to the app. A typical run command looks like:
+
+    docker run -d --restart always \
+               --name=ha-multi-ap-tracker \
+               -v /srv/ha-multi-ap-tracker:/data \
+               ha-multi-ap-tracker:0.0.1 -c /data/config.yml -s /data/state.yml track
+
+Note that to run this container on an older Ubuntu host you might need to add the
+option `--security-opt seccomp=unconfined`.
+
 
 ### Setup of Home Assistant
 
@@ -215,3 +235,4 @@ with the common style and all status code checks are successful:
 [MQTT - Configure MQTT options]: https://www.home-assistant.io/integrations/mqtt/#configure-mqtt-options
 [home-assistant AVM FRITZ!Box Tools]: https://www.home-assistant.io/integrations/fritz/
 [home-assistant MQTT integration]: https://www.home-assistant.io/integrations/mqtt
+[ha_multi_ap_tracker releases]: https://github.com/seeraven/ha_multi_ap_tracker/releases

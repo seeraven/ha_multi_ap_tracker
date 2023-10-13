@@ -36,5 +36,25 @@ precheck-releases: check-style.all tests.all doc man
 
 
 # ----------------------------------------------------------------------------
+#  DOCKER IMAGE RELEASE
+# ----------------------------------------------------------------------------
+ifeq ($(ON_WINDOWS),0)
+
+DOCKER_IMAGE_NAME     := $(or $(DOCKER_IMAGE_NAME),$(APP_NAME))
+DOCKER_RELEASE_NAME   := $(DOCKER_IMAGE_NAME):$(APP_VERSION)
+
+.PHONY: build-docker-release
+
+build-docker-release: .docker_release/Dockerfile
+	@echo "Building image $(DOCKER_RELEASE_NAME)"
+	@docker build --rm --pull \
+	              --tag $(DOCKER_RELEASE_NAME) \
+	              --file .docker_release/Dockerfile \
+	              .
+
+endif
+
+
+# ----------------------------------------------------------------------------
 #  EOF
 # ----------------------------------------------------------------------------
